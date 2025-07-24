@@ -1,0 +1,12 @@
+{
+	"client": {
+		"output": "src/convex/_generated/client.ts"
+	},
+	"functions": {
+		"output": "convex/_generated/server.ts",
+		"path": "convex"
+	},
+	"schema": {
+		"path": "convex/schema.ts"
+	}
+}
