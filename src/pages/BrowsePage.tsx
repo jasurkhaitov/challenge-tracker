@@ -6,7 +6,7 @@ import Footer from '@/components/shared/Footer'
 
 export default function BrowsePage() {
 	return (
-		<div className='overflow-x-hidden'>
+		<div className='overflow-x-hidden min-h-screen max-w-7xl m-auto px-4 bg-background'>
 			<BrowseNavbar />
 			<BrowseHeader />
 			<BrowseHero />

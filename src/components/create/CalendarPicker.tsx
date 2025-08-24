@@ -23,9 +23,9 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
 	minDate,
 }) => {
 	return (
-		<div className='space-y-3'>
+		<div>
 			<Label className='text-base font-medium'>Deadline *</Label>
-			<p className='text-sm text-muted-foreground'>
+			<p className='text-sm text-muted-foreground mb-3'>
 				Choose a date at least 100 days from today to ensure a meaningful
 				long-term challenge.
 			</p>
@@ -34,7 +34,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
 					<Button
 						variant='outline'
 						className={cn(
-							'w-full h-12 justify-start text-left font-normal',
+							'w-full justify-start text-left font-normal',
 							!selectedDate && 'text-muted-foreground'
 						)}
 					>

@@ -2,7 +2,6 @@ import React, { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
 	Select,
 	SelectContent,
@@ -23,15 +22,12 @@ import {
 	MoreHorizontal,
 } from 'lucide-react'
 import ColorInput from './ColorInput'
-import CalendarPicker from './CalendarPicker'
 
 export type ChallengeFormData = {
 	name: string
 	goal: string
-	description: string
 	category: string
 	color: string
-	deadline: Date
 }
 
 type ChallengeFormProps = {
@@ -71,10 +67,8 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 	const [formData, setFormData] = useState<ChallengeFormData>({
 		name: '',
 		goal: '',
-		description: '',
 		category: '',
 		color: challengeColors[0].value,
-		deadline: new Date(),
 	})
 
 	const minDate = new Date()
@@ -85,8 +79,7 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 		if (
 			!formData.name ||
 			!formData.goal ||
-			!formData.category ||
-			!formData.deadline
+			!formData.category
 		) {
 			return
 		}
@@ -101,7 +94,7 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 		<div className='space-y-6'>
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 				<div className='space-y-3'>
-					<Label htmlFor='name' className='text-base font-medium'>
+					<Label htmlFor='name' className='text-sm mb-1 font-medium'>
 						Challenge Name *
 					</Label>
 					<Input
@@ -112,12 +105,12 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 							setFormData(prev => ({ ...prev, name: e.target.value }))
 						}
 						required
-						className='h-12'
+						className=''
 					/>
 				</div>
 
 				<div className='space-y-3'>
-					<Label htmlFor='goal' className='text-base font-medium'>
+					<Label htmlFor='goal' className='text-sm mb-1 font-medium'>
 						Goal *
 					</Label>
 					<Input
@@ -128,12 +121,12 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 							setFormData(prev => ({ ...prev, goal: e.target.value }))
 						}
 						required
-						className='h-12'
+						className=''
 					/>
 				</div>
 
 				<div className='space-y-3'>
-					<Label className='text-base font-medium'>Category *</Label>
+					<Label className='text-sm mb-1 font-medium'>Category *</Label>
 					<Select
 						value={formData.category}
 						onValueChange={value =>
@@ -141,7 +134,7 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 						}
 						required
 					>
-						<SelectTrigger className='h-12'>
+						<SelectTrigger className=''>
 							<SelectValue placeholder='Select a category'>
 								{selectedCategoryIcon && (
 									<div className='flex items-center gap-2'>
@@ -168,18 +161,6 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 						</SelectContent>
 					</Select>
 				</div>
-
-				<div className='space-y-3'>
-					<CalendarPicker
-						selectedDate={formData.deadline}
-						onDateChange={date => {
-							if (date) {
-								setFormData(prev => ({ ...prev, deadline: date }))
-							}
-						}}
-						minDate={minDate}
-					/>
-				</div>
 			</div>
 			<div className='md:col-span-1'>
 				<ColorInput
@@ -188,40 +169,23 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
 				/>
 			</div>
 
-			<div className='space-y-3'>
-				<Label htmlFor='description' className='text-base font-medium'>
-					Description (Optional)
-				</Label>
-				<Textarea
-					id='description'
-					placeholder='Add more details about your challenge, motivation, or specific guidelines...'
-					value={formData.description}
-					onChange={e =>
-						setFormData(prev => ({ ...prev, description: e.target.value }))
-					}
-					rows={6}
-					className='resize-none min-h-[120px]'
-				/>
-			</div>
-
 			<div className='flex space-x-4'>
 				<Button
 					type='button'
 					variant='outline'
-					className='flex-1 h-12'
+					className='flex-1 '
 					onClick={() => alert('Cancelled')}
 				>
 					Cancel
 				</Button>
 				<Button
 					type='submit'
-					className='flex-1 h-12'
+					className='flex-1 '
 					disabled={
 						isSubmitting ||
 						!formData.name ||
 						!formData.goal ||
-						!formData.category ||
-						!formData.deadline
+						!formData.category
 					}
 					onClick={handleSubmit}
 				>

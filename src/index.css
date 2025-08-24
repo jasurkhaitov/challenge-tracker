@@ -151,6 +151,21 @@ button {
 	border-radius: 6px;
 }
 
+.graph::-webkit-scrollbar {
+	width: 2px;
+	height: 2px;
+}
+
+.graph::-webkit-scrollbar-track {
+	@apply bg-background;
+	border-radius: 1px;
+}
+
+.graph::-webkit-scrollbar-thumb {
+	@apply bg-foreground;
+	border-radius: 6px;
+}
+
 @keyframes fade-up {
 	from {
 		opacity: 0;
