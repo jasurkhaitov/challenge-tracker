@@ -152,8 +152,7 @@ button {
 }
 
 .graph::-webkit-scrollbar {
-	width: 2px;
-	height: 2px;
+	height: 1px;
 }
 
 .graph::-webkit-scrollbar-track {
@@ -163,7 +162,7 @@ button {
 
 .graph::-webkit-scrollbar-thumb {
 	@apply bg-foreground;
-	border-radius: 6px;
+	border-radius: 2px;
 }
 
 @keyframes fade-up {
