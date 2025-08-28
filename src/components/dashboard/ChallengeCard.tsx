@@ -30,6 +30,12 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
 	const category = challengeCategories.find(c => c.name === challenge.category)
 	const CategoryIcon = category?.icon
 
+	const stats = {
+		total: challenge.totalDays,
+		completion: challenge.completedDays,
+		missed: challenge.missedDays
+	}
+
 	return (
 		<div
 			className={`group border rounded-md p-5 transition-all duration-200`}
@@ -51,7 +57,7 @@ export default function ChallengeCard({ challenge }: ChallengeCardProps) {
 						{new Date(challenge.createdAt).toLocaleString()}
 					</div>
 
-					<ChallengeActions challengeId={challenge._id} />
+					<ChallengeActions stats={stats} challengeId={challenge._id} />
 				</div>
 			</div>
 

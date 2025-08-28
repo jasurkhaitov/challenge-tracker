@@ -5,7 +5,7 @@ import { CircleCheck, EllipsisVertical, Trash2 } from "lucide-react"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { Id } from 'convex/_generated/dataModel'
-
+import { Modal, ModalHeader, ModalFooter, ModalTitle, ModalDescription } from '../shared/Modal'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,22 +14,22 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog"
+import { toast } from 'sonner'
+import { Progress } from '../ui/progress'
 
 interface ChallengeActionsProps {
-	challengeId: Id<'challenges'>
+	challengeId: Id<'challenges'>,
+	stats: {
+		total: number,
+		completion: number,
+		missed: number
+	}
 }
 
-export default function ChallengeActions({ challengeId }: ChallengeActionsProps) {
+export default function ChallengeActions({ challengeId, stats }: ChallengeActionsProps) {
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+	const [showCompleteDialog, setShowCompleteDialog] = useState(false)
+
 	const [deleteConfirmText, setDeleteConfirmText] = useState("")
 
 	const deleteChallenge = useMutation(api.challenges.deleteChallenge)
@@ -38,44 +38,39 @@ export default function ChallengeActions({ challengeId }: ChallengeActionsProps)
 	useEffect(() => {
 		if (!showDeleteDialog) {
 			setDeleteConfirmText("")
-			document.body.style.overflow = 'unset'
-			document.body.style.paddingRight = '0px'
 		}
 	}, [showDeleteDialog])
 
-	const handleDeleteClick = () => {
-		setShowDeleteDialog(true)
+	const handleDeleteClick = () => setShowDeleteDialog(true)
+	const handleConfirmDelete = async () => {
+		if (deleteConfirmText === "Delete Challenge") {
+			try {
+				await deleteChallenge({ id: challengeId })
+				toast.success("Challenge deleted successfully")
+				setShowDeleteDialog(false)
+			} catch (err) {
+				toast.error("Failed to delete challenge")
+				console.error(err)
+			}
+		}
 	}
+	const isDeleteConfirmValid = deleteConfirmText === "Delete Challenge"
 
-	const handleConfirmDelete = () => {
-		if (deleteConfirmText === "delete challenge") {
-			deleteChallenge({ id: challengeId })
-			closeDialog()
+	const handleCompleteClick = () => setShowCompleteDialog(true)
+	const handleConfirmComplete = async () => {
+		try {
+			await completeChallenge({ challengeId })
+			toast.success("Challenge completed successfully 🎉")
+			setShowCompleteDialog(false)
+		} catch (err) {
+			toast.error("Failed to complete challenge")
+			console.error(err)
 		}
 	}
 
-	const closeDialog = () => {
-		setShowDeleteDialog(false)
-		setDeleteConfirmText("")
-		setTimeout(() => {
-			document.body.style.overflow = 'unset'
-			document.body.style.paddingRight = '0px'
-		}, 100)
-	}
-
-	// const handleDialogChange = (open: boolean) => {
-	// 	if (!open) {
-	// 		closeDialog()
-	// 	} else {
-	// 		setShowDeleteDialog(true)
-	// 	}
-	// }
-
-	const handleComplete = () => {
-		completeChallenge({ challengeId })
-	}
-
-	const isDeleteConfirmValid = deleteConfirmText === "delete challenge"
+	const percent = stats.total > 0
+		? Math.round((stats.completion / stats.total) * 100)
+		: 0
 
 	return (
 		<>
@@ -89,63 +84,82 @@ export default function ChallengeActions({ challengeId }: ChallengeActionsProps)
 					<DropdownMenuLabel>Actions</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
-						className="text-red-500 cursor-pointer hover:text-red-400 focus:text-red-700"
+						className="text-red-500 cursor-pointer hover:text-red-300 focus:text-red-500"
 						onClick={handleDeleteClick}
 					>
 						<Trash2 className="w-5 h-5 text-red-500" /> Delete Challenge
 					</DropdownMenuItem>
 					<DropdownMenuItem
-						className="text-green-600 cursor-pointer hover:text-green-600 focus:text-green-700"
-						onClick={handleComplete}
+						className="text-green-600 cursor-pointer hover:text-green-400 focus:text-green-700"
+						onClick={handleCompleteClick}
 					>
 						<CircleCheck className="w-5 h-5 text-green-600" /> Complete Challenge
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<DialogContent className="sm:max-w-[425px]">
-					<DialogHeader>
-						<DialogTitle className="text-red-600">Delete Challenge</DialogTitle>
-						<DialogDescription>
-							This action cannot be undone. This will permanently delete the challenge
-							and all its progress data.
-						</DialogDescription>
-					</DialogHeader>
+			<Modal isOpen={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} className="sm:max-w-[425px]">
+				<ModalHeader>
+					<ModalTitle className="text-red-600">Delete Challenge</ModalTitle>
+					<ModalDescription>
+						This action cannot be undone. This will permanently delete the challenge
+						and all its progress data.
+					</ModalDescription>
+				</ModalHeader>
 
-					<div className="grid gap-4 py-4">
-						<div className="grid gap-2">
-							<label htmlFor="confirm-text" className="text-sm font-medium">
-								Type <span className="font-mono bg-muted px-1 py-0.5 rounded">delete challenge</span> to confirm:
-							</label>
-							<Input
-								id="confirm-text"
-								value={deleteConfirmText}
-								onChange={(e) => setDeleteConfirmText(e.target.value)}
-								placeholder="delete challenge"
-								className="w-full"
-							/>
-						</div>
+				<div className="grid gap-4 py-4">
+					<div className="grid gap-2">
+						<label htmlFor="confirm-text" className="text-sm mb-1 font-medium">
+							Type <span className="font-mono bg-muted px-1 py-0.5 rounded">Delete Challenge</span> to confirm:
+						</label>
+						<Input
+							id="confirm-text"
+							value={deleteConfirmText}
+							onChange={(e) => setDeleteConfirmText(e.target.value)}
+							placeholder="Delete Challenge"
+							className="w-full"
+							autoFocus
+						/>
 					</div>
+				</div>
 
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={closeDialog}
-						>
-							Cancel
-						</Button>
-						<Button
-							variant="destructive"
-							onClick={handleConfirmDelete}
-							disabled={!isDeleteConfirmValid}
-						>
-							<Trash2 className="w-4 h-4 mr-2" />
-							Delete Challenge
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+				<ModalFooter>
+					<Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+					<Button variant="destructive" onClick={handleConfirmDelete} disabled={!isDeleteConfirmValid}>
+						Delete Challenge
+					</Button>
+				</ModalFooter>
+			</Modal>
+
+			<Modal isOpen={showCompleteDialog} onClose={() => setShowCompleteDialog(false)} className="sm:max-w-[425px]">
+				<ModalHeader>
+					<ModalTitle className="text-green-600">Complete Challenge</ModalTitle>
+					<ModalDescription>
+						Review your challenge stats before completing it.
+					</ModalDescription>
+				</ModalHeader>
+
+				<>
+					<div className="flex items-center justify-between text-sm">
+						<span className="font-medium text-foreground">Progress</span>
+						<span className="text-muted-foreground">{percent}%</span>
+					</div>
+					<Progress value={percent} className="h-2 rounded-full" />
+				</>
+
+				<div className="grid gap-3 py-4 text-sm">
+					<div className="flex justify-between"><span>Total Days:</span><span>{stats.total}</span></div>
+					<div className="flex justify-between"><span>Completed:</span><span>{stats.completion}</span></div>
+					<div className="flex justify-between"><span>Missed:</span><span>{stats.missed}</span></div>
+				</div>
+
+				<ModalFooter>
+					<Button variant="outline" onClick={() => setShowCompleteDialog(false)}>Cancel</Button>
+					<Button onClick={handleConfirmComplete}>
+						Mark as Completed
+					</Button>
+				</ModalFooter>
+			</Modal>
 		</>
 	)
 }

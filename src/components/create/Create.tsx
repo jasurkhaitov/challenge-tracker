@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import ChallengeForm from './ChallengeForm'
 import { toast } from 'sonner'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { useUser } from '@clerk/clerk-react'
+import { useNavigate } from 'react-router-dom'
 
 const Create = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -11,13 +12,7 @@ const Create = () => {
 	const createChallenge = useMutation(api.challenges.createChallenge)
 	const ensureUser = useMutation(api.users.ensureUser)
 	const { user } = useUser()
-
-	const convexUser = useQuery(
-		api.users.getUserByClerkId,
-		user?.id ? { clerkId: user.id } : 'skip'
-	)
-
-	console.log(convexUser)
+	const navigate = useNavigate()
 
 	const handleSubmit = async (formData: {
 		name: string
@@ -52,6 +47,8 @@ const Create = () => {
 			})
 
 			toast.success('Challenge created successfully!')
+			navigate('/dashboard')
+
 		} catch (error) {
 			console.error('Failed to create challenge:', error)
 			if (error instanceof Error) {
@@ -69,7 +66,7 @@ const Create = () => {
 			<h2 className='text-2xl mb-1 font-bold'>
 				Create New Challenge
 			</h2>
-			<p className='text-muted-foreground  text-md'>
+			<p className='text-muted-foreground text-md'>
 				Set up a long-term challenge to achieve your goals
 			</p>
 			<div className='mt-5 pt-5 border-t'>

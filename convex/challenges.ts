@@ -2,6 +2,111 @@ import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
 import type { Id } from './_generated/dataModel'
 
+function calculateTotalDays(startDate: Date, endDate: Date): number {
+	const MS_PER_DAY = 1000 * 60 * 60 * 24
+
+	const start = new Date(startDate)
+	const end = new Date(endDate)
+
+	const dayDiff = Math.floor((end.getTime() - start.getTime()) / MS_PER_DAY)
+
+	const startHours = start.getHours()
+	const endHours = end.getHours()
+
+	if (endHours < startHours) {
+		return dayDiff + 2
+	} else {
+		return dayDiff + 1
+	}
+}
+
+type Challenge = {
+	_id: Id<'challenges'>
+	name: string
+	goal: string
+	color: string
+	category: string
+	userId: Id<'users'>
+	createdAt: number
+	active?: boolean
+	completedAt?: number
+}
+
+export type CompletedChallengeWithStats = Challenge & {
+	stats: {
+		totalDays: number
+		completedDays: number
+		missedDays: number
+		startedAt: number
+		endedAt: number
+		completionRate: number
+	}
+}
+
+export const deleteCompletedChallenge = mutation({
+	args: { id: v.id('challenges') },
+	handler: async (ctx, args) => {
+		await ctx.db.delete(args.id)
+	},
+})
+
+export const getCompletedChallenges = query({
+	args: { userId: v.id('users') },
+	handler: async (ctx, args): Promise<CompletedChallengeWithStats[]> => {
+		const challenges = await ctx.db
+			.query('challenges')
+			.withIndex('by_userId', q => q.eq('userId', args.userId))
+			.order('desc')
+			.collect()
+
+		const results: CompletedChallengeWithStats[] = []
+
+		for (const ch of challenges) {
+			if (ch.active !== false) continue
+			if (!ch.completedAt) continue
+
+			const completions = await ctx.db
+				.query('completions')
+				.withIndex('by_challenge_user_date', q =>
+					q.eq('challengeId', ch._id).eq('userId', args.userId)
+				)
+				.collect()
+
+			const startDate = new Date(ch.createdAt)
+
+			const endDate = new Date(ch.completedAt)
+
+			const totalDays = calculateTotalDays(startDate, endDate)
+
+			const completedDays = completions.reduce((acc, c) => {
+				const d = new Date(c.date + 'T00:00:00.000Z')
+				const time = d.getTime()
+				return time >= startDate.getTime() && time <= endDate.getTime()
+					? acc + 1
+					: acc
+			}, 0)
+
+			const missedDays = Math.max(0, totalDays - completedDays)
+			const completionRate =
+				totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0
+
+			results.push({
+				...ch,
+				stats: {
+					totalDays,
+					completedDays,
+					missedDays,
+					startedAt: ch.createdAt,
+					endedAt: ch.completedAt,
+					completionRate,
+				},
+			})
+		}
+
+		return results
+	},
+})
+
 export type ChallengeWithCompletions = {
 	_id: Id<'challenges'>
 	_creationTime: number
@@ -43,6 +148,7 @@ export const getUserChallenges = query({
 		const challenges = await ctx.db
 			.query('challenges')
 			.withIndex('by_userId', q => q.eq('userId', args.userId))
+			.order('desc')
 			.collect()
 
 		const results: ChallengeWithCompletions[] = []
@@ -59,15 +165,10 @@ export const getUserChallenges = query({
 			const completedDays = completions.length
 
 			const startDate = new Date(ch.createdAt)
-			startDate.setHours(0, 0, 0, 0)
 
 			const today = new Date()
-			today.setHours(0, 0, 0, 0)
 
-			const totalDays =
-				Math.floor(
-					(today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-				) + 2
+			const totalDays = calculateTotalDays(startDate, today)
 
 			const missedDays = Math.max(0, totalDays - completedDays)
 

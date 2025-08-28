@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import LifeLine from "react-loading-indicators/Lifeline"
+
 import { useConvexAuth } from 'convex/react'
-import { Loader } from 'lucide-react'
 
 export default function ProtectedRoute() {
 	const { isAuthenticated, isLoading } = useConvexAuth()
@@ -9,7 +10,7 @@ export default function ProtectedRoute() {
 	if (isLoading) {
 		return (
 			<div className='w-full h-screen flex items-center justify-center'>
-				<Loader className='text-blue-600 animate-spin w-10 h-10' />
+				<LifeLine size='small' color={["#32cd32", "#327fcd", "#cd32cd", "#cd8032"]} />
 			</div>
 		)
 	}

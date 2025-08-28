@@ -16,13 +16,13 @@ export function ChallengeStats(props: {
 
 	return (
 		<div className="space-y-6">
-			<div>
+			<>
 				<div className="mb-2 flex items-center justify-between text-sm">
 					<span className="font-medium text-foreground">Progress</span>
 					<span className="text-muted-foreground">{percent}%</span>
 				</div>
 				<Progress value={percent} className="h-2 rounded-full" />
-			</div>
+			</>
 
 			<div className="grid grid-cols-1  sm:grid-cols-3 gap-3 text-center">
 				<div className="flex justify-center gap-1.5 items-center rounded-lg border border-border p-3">
