@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import LifeLine from "react-loading-indicators/Lifeline"
+import { LifeLine } from "react-loading-indicators"
 
 import { useConvexAuth } from 'convex/react'
 
