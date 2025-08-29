@@ -32,17 +32,16 @@ export default function HistoryPage() {
 
 	const deleteCompleted = useMutation(api.challenges.deleteCompletedChallenge)
 
+	const loading = activeChallenges === undefined || completedChallenges === undefined
 	useEffect(() => {
-		const loading = activeChallenges === undefined || completedChallenges === undefined
 		if (loading) {
 			loadingBar.current?.continuousStart()
 		} else {
 			loadingBar.current?.complete()
 		}
-	}, [activeChallenges, completedChallenges])
+	}, [loading])
 
-	const hasNoHistory =
-		completedChallenges && completedChallenges.length === 0
+	const hasNoHistory = completedChallenges && completedChallenges.length === 0
 
 	const handleDeleteChallenge = async (id: string) => {
 		try {
@@ -60,14 +59,13 @@ export default function HistoryPage() {
 
 			<Navbar />
 
-			{hasNoHistory && <EmptyHistory />}
+			{!loading && hasNoHistory && <EmptyHistory />}
 
-			{completedChallenges && completedChallenges.length > 0 && (
-
+			{!loading && completedChallenges && completedChallenges.length > 0 && (
 				<div className="max-w-7xl mx-auto my-30">
 					<HistoryHeader num={completedChallenges.length} link={"/dashboard"} />
 
-					<div className='flex flex-col gap-5'>
+					<div className="flex flex-col gap-5">
 						{completedChallenges.map(challenge => (
 							<CompletedChallengeCard
 								key={challenge._id}
@@ -77,7 +75,6 @@ export default function HistoryPage() {
 						))}
 					</div>
 				</div>
-
 			)}
 		</div>
 	)
