@@ -62,23 +62,23 @@ export default function HistoryPage() {
 
 			{hasNoHistory && <EmptyHistory />}
 
-			<div className="max-w-7xl mx-auto my-30">
-				{completedChallenges && completedChallenges.length > 0 && (
-					<>
-						<HistoryHeader num={completedChallenges.length} link={"/dashboard"} />
+			{completedChallenges && completedChallenges.length > 0 && (
 
-						<div className='flex flex-col gap-5'>
-							{completedChallenges.map(challenge => (
-								<CompletedChallengeCard
-									key={challenge._id}
-									challenge={challenge}
-									onDelete={handleDeleteChallenge}
-								/>
-							))}
-						</div>
-					</>
-				)}
-			</div>
+				<div className="max-w-7xl mx-auto my-30">
+					<HistoryHeader num={completedChallenges.length} link={"/dashboard"} />
+
+					<div className='flex flex-col gap-5'>
+						{completedChallenges.map(challenge => (
+							<CompletedChallengeCard
+								key={challenge._id}
+								challenge={challenge}
+								onDelete={handleDeleteChallenge}
+							/>
+						))}
+					</div>
+				</div>
+
+			)}
 		</div>
 	)
 }

@@ -23,13 +23,19 @@ export default function DashboardPage() {
 		convexUser?._id ? { userId: convexUser._id } : "skip"
 	)
 
+	const isUserLoading = user?.id && convexUser === undefined
+	const isChallengesLoading =
+		convexUser?._id && challenges === undefined
+
+	const isLoading = isUserLoading || isChallengesLoading
+
 	useEffect(() => {
-		if (challenges === undefined) {
+		if (isLoading) {
 			loadingBar.current?.continuousStart()
 		} else {
 			loadingBar.current?.complete()
 		}
-	}, [challenges])
+	}, [isLoading])
 
 	return (
 		<div className="bg-background px-4">
@@ -37,22 +43,28 @@ export default function DashboardPage() {
 
 			<Navbar />
 
-			{challenges && challenges.length === 0 && <EmptyDashboard />}
+			{!isLoading && !convexUser && (
+				<EmptyDashboard />
+			)}
 
-			<div className="max-w-7xl mx-auto my-30">
-				{challenges && challenges.length > 0 && (
-					<div>
-						<div className="mb-8">
-							<DashboardHeader
-								name={user?.firstName || "there"}
-								link={"/create"}
-							/>
-						</div>
+			{!isLoading && convexUser && challenges?.length === 0 && (
+				<EmptyDashboard />
+			)}
 
-						<ChallengesList challenges={challenges} />
+			{!isLoading && challenges && challenges.length > 0 && (
+
+				<div className="max-w-7xl mx-auto my-30">
+					<div className="mb-8">
+						<DashboardHeader
+							name={user?.firstName || "there"}
+							link={"/create"}
+						/>
 					</div>
-				)}
-			</div>
+
+					<ChallengesList challenges={challenges} />
+				</div>
+
+			)}
 		</div>
 	)
 }
