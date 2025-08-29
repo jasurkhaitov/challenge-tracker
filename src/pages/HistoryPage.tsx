@@ -20,28 +20,24 @@ export default function HistoryPage() {
 		user?.id ? { clerkId: user.id } : "skip"
 	)
 
-	const activeChallenges = useQuery(
-		api.challenges.getUserChallenges,
-		convexUser?._id ? { userId: convexUser._id } : "skip"
-	)
-
 	const completedChallenges = useQuery(
 		api.challenges.getCompletedChallenges,
 		convexUser?._id ? { userId: convexUser._id } : "skip"
 	)
 
+	const isUserLoading = user?.id && convexUser === undefined
+	const isChallengesLoading = convexUser?._id && completedChallenges === undefined
+	const isLoading = isUserLoading || isChallengesLoading
+
 	const deleteCompleted = useMutation(api.challenges.deleteCompletedChallenge)
 
-	const loading = activeChallenges === undefined || completedChallenges === undefined
 	useEffect(() => {
-		if (loading) {
+		if (isLoading) {
 			loadingBar.current?.continuousStart()
 		} else {
 			loadingBar.current?.complete()
 		}
-	}, [loading])
-
-	const hasNoHistory = completedChallenges && completedChallenges.length === 0
+	}, [isLoading])
 
 	const handleDeleteChallenge = async (id: string) => {
 		try {
@@ -59,14 +55,17 @@ export default function HistoryPage() {
 
 			<Navbar />
 
-			{!loading && hasNoHistory && <EmptyHistory />}
+			{!isLoading && !convexUser && <EmptyHistory />}
 
-			{!loading && completedChallenges && completedChallenges.length > 0 && (
+			{!isLoading && convexUser && completedChallenges?.length === 0 && (
+				<EmptyHistory />
+			)}
+
+			{!isLoading && completedChallenges && completedChallenges.length > 0 && (
 				<div className="max-w-7xl mx-auto my-30">
 					<HistoryHeader num={completedChallenges.length} link={"/dashboard"} />
-
 					<div className="flex flex-col gap-5">
-						{completedChallenges.map(challenge => (
+						{completedChallenges.map((challenge) => (
 							<CompletedChallengeCard
 								key={challenge._id}
 								challenge={challenge}
