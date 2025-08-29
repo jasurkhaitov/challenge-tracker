@@ -116,7 +116,7 @@ export default function CompletedChallengeCard({ challenge, onDelete }: Complete
 				<div className="flex items-center gap-3">
 					<CalendarArrowUp className="text-green-500 w-5 h-5" />
 					<div className="flex items-center gap-1">
-						<span className="text-sm text-muted-foreground">Started  -  </span>
+						<span className="hidden xs:flex text-sm text-muted-foreground">Started  -  </span>
 						<span className="font-medium text-foreground">
 							{new Date(challenge.stats.startedAt).toLocaleString()}
 						</span>
@@ -126,7 +126,7 @@ export default function CompletedChallengeCard({ challenge, onDelete }: Complete
 				<div className="flex items-center gap-3">
 					<CalendarArrowDown className="text-red-500 w-5 h-5" />
 					<div className="flex items-center gap-1">
-						<span className="text-sm text-muted-foreground">Ended - </span>
+						<span className="hidden xs:flex text-sm text-muted-foreground">Ended - </span>
 						<span className="font-medium text-foreground">
 							{new Date(challenge.stats.endedAt).toLocaleString()}
 						</span>

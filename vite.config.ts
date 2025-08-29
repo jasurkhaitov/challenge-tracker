@@ -10,6 +10,7 @@ export default defineConfig({
 		sourcemap: false,
 		outDir: 'dist',
 		target: 'esnext',
+		chunkSizeWarningLimit: 1000,
 		rollupOptions: {
 			output: {
 				entryFileNames: 'assets/[name].[hash].js',
