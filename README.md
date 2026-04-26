@@ -1,4 +1,4 @@
-# 🚀 Challenge Tracker – HabitFlow
+## 🚀 Challenge Tracker – HabitFlow
 
 **Build powerful habits and reach your goals effortlessly.**  
 Challenge Tracker (HabitFlow) helps users build discipline by creating challenge-based habits with fixed deadlines and visual progress tracking.
@@ -7,19 +7,19 @@ Challenge Tracker (HabitFlow) helps users build discipline by creating challenge
 
 ---
 
-## 🧠 Features
+### Features
 
-- ✅ Create challenge-based habits (e.g., 30-day fitness challenge)
-- 📅 Set clear goals and deadlines
-- 📈 Track progress with a GitHub-style contribution graph
-- 👤 Secure authentication with Clerk
-- ⚡ Real-time database updates with Convex
-- 💅 Beautiful UI with ShadCN and TailwindCSS
-- 🌐 Responsive design for all screen sizes
+- Create challenge-based habits (e.g., 30-day fitness challenge)
+- Set clear goals and deadlines
+- Track progress with a GitHub-style contribution graph
+- Secure authentication with Clerk
+- Real-time database updates with Convex
+- Beautiful UI with ShadCN and TailwindCSS
+- Responsive design for all screen sizes
 
 ---
 
-## 🛠 Tech Stack
+### Tech Stack
 
 | Technology   | Description                                  |
 |--------------|----------------------------------------------|
